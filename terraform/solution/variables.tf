@@ -29,13 +29,19 @@ variable "asg_max_size" {
 variable "asg_image_id" {
   description = "The AMI ID for the ASG launch template"
   type        = string
-  default     = "ami-0905cfb22089e0bf6"
+  default     = "ami-0d6fb2916ee0ab9fe"
 }
 
 variable "asg_instance_type" {
   description = "The instance type for the ASG"
   type        = string
   default     = "t3.micro"
+}
+
+variable "asg_cpu_utilisation_threshold" {
+  description = "The ASG CPU utilisation threshold"
+  type        = string
+  default     = "80"
 }
 
 variable "rds_engine" {

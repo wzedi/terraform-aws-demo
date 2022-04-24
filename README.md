@@ -119,4 +119,15 @@ The solution stack incldues the VPC, RDS instance and EC2 instance.
 
 The RDS instance is deployed into a "server" security group that allows ingress from the "client" security group only.
 
-The EC2 instance is deployed into the "client" security group.
+The EC2 instance is deployed into the "client" security group allowing mysql connections to the server.
+
+The EC2 instance is deployed to the "target" security group allowing http and https traffic in and all traffic out.
+
+Connect to the instance via SSM connection in the EC2 console.
+
+The Cloud Watch Agent has been installed and configured to stream the system log to Cloud Watch.
+
+### Gotchas and Troubleshooting
+
+* If you do destroy the stack and then attempt to redeploy the database password secret name will be in conflict and must be changed in the rds config (maybe it should be a var)
+* 

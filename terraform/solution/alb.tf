@@ -17,7 +17,7 @@ resource "aws_security_group" "target_security_group" {
   }
 }
 
-resource "aws_security_group_rule" "target_ingress" {
+resource "aws_security_group_rule" "target_http_ingress" {
   type                     = "ingress"
   from_port                = 80
   to_port                  = 80
@@ -26,12 +26,21 @@ resource "aws_security_group_rule" "target_ingress" {
   security_group_id        = aws_security_group.target_security_group.id
 }
 
+resource "aws_security_group_rule" "target_https_ingress" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb_security_group.id
+  security_group_id        = aws_security_group.target_security_group.id
+}
+
 resource "aws_security_group" "alb_security_group" {
-  name        = "RDS ALB Security Group"
-  description = "RDS ALB security group"
+  name        = "ALB Security Group"
+  description = "ALB security group"
   vpc_id      = module.vpc.vpc_id
 
-  egress {
+  ingress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
