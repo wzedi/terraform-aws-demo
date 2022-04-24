@@ -20,7 +20,7 @@ To deploy the entire solution:
 1. Setup your environment.
     * REQUIRED: Run the Docker daemon for your environment. This project runs `terraform` and `jq` through docker.
     * REQUIRED: This is an AWS deployment. You'll need either an AWS credentials file and profile name or login to AWS
-        * If you are using a credentials file the default location is `${HOME}/.aws`. Set `$AWS_CONFIG_DIR` to override the default.
+        * If you are using a credentials file set `$AWS_PROFILE` as required. The default config file location is `${HOME}/.aws`. Set `$AWS_CONFIG_DIR` to override the default.
         * If you are using AWS credentials please ensure `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` are set.
     * OPTIONAL: The Terraform plan will output to a default location. To override the default set `$PLAN_FILE`
 1. Deploy the backend and the solution stack: `make deploy`. This will:
@@ -31,7 +31,7 @@ To deploy the entire solution:
 ### Deploy example:
 
 ```
-% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make deploy
+% AWS_PROFILE=myprofile make deploy
 ```
 
 ### Destroy example:
@@ -43,8 +43,10 @@ Note: To avoid errors when destroying the stack deletion protection must be remo
 1. Click to Modify the instance
 1. Disable instance protection near the bottom of the form
 
+The backend bucket must also be emptied.
+
 ```
-% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make destroy
+% AWS_PROFILE=myprofile make destroy
 ```
 
 ### Other terraform commands
@@ -115,7 +117,13 @@ The backend must be deployed before deploying the solution stack.
 
 ### Solution Stack
 
-The solution stack incldues the VPC, RDS instance and EC2 instance.
+The back-end details are passed to the solution stack as follows:
+
+1. The backend stack outputs the bucket name and table name
+1. The make target for all solution stack terraform commands uses `terraform output -json` and parses the names out using `jq`
+1. The names are then passed into the `main.tf.template` file to create the `main.tf` file with correct backend config
+
+The solution stack includes the VPC, RDS instance and EC2 instance.
 
 The RDS instance is deployed into a "server" security group that allows ingress from the "client" security group only.
 
@@ -130,4 +138,4 @@ The Cloud Watch Agent has been installed and configured to stream the system log
 ### Gotchas and Troubleshooting
 
 * If you do destroy the stack and then attempt to redeploy the database password secret name will be in conflict and must be changed in the rds config (maybe it should be a var)
-* 
+* When destroying the stack with `var.rds_skip_final_snapshot` set to `true` the destroy will fail after timeout because the DB options group is in use by the final snapshot and cannot be deleted. The final snapshot must be manually deleted.

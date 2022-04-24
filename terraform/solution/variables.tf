@@ -109,3 +109,9 @@ variable "rds_major_engine_version" {
   type        = string
   default     = "8.0"
 }
+
+variable "rds_skip_final_snapshot" {
+  description = "Whether to skip the final snapshot when deleting the database"
+  type        = bool
+  default     = true
+}
