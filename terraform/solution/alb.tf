@@ -27,8 +27,8 @@ resource "aws_security_group_rule" "target_ingress" {
 }
 
 resource "aws_security_group" "alb_security_group" {
-  name        = "RDS Server Security Group"
-  description = "RDS server side security group"
+  name        = "RDS ALB Security Group"
+  description = "RDS ALB security group"
   vpc_id      = module.vpc.vpc_id
 
   egress {
