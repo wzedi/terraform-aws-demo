@@ -90,6 +90,9 @@ solution-plan: solution tf-plan terraform
 .PHONY: solution-apply
 solution-apply: solution tf-apply terraform
 
+.PHONY: solution-output
+solution-output: solution tf-output terraform
+
 .PHONY: solution-destroy
 solution-destroy: solution tf-destroy terraform
 
@@ -108,3 +111,8 @@ deploy:
 destroy:
 	make solution-destroy
 	make backend-destroy
+
+.PHONY: test-alb
+test-alb:
+	$(eval ALB_DNS_NAME := $(shell make solution-output | JQ_ARGS="-r .alb_dns_name.value" make jq))
+	curl http://$(ALB_DNS_NAME)
