@@ -87,8 +87,8 @@ module "db" {
   maintenance_window = var.rds_maintenance_window
   backup_window      = var.rds_backup_window
 
-  monitoring_interval = "30"
-  monitoring_role_name = "db-monitor-role"
+  monitoring_interval    = "30"
+  monitoring_role_name   = "db-monitor-role"
   create_monitoring_role = true
 
   tags = {
@@ -110,6 +110,8 @@ module "db" {
   deletion_protection = true
 
   storage_encrypted = true
+
+  skip_final_snapshot = var.rds_skip_final_snapshot
 
   parameters = [
     {
