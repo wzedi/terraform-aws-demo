@@ -2,6 +2,7 @@ AWS_CONFIG_DIR ?= ${HOME}/.aws
 PLAN_FILE ?= "terraform-plan"
 AWS_REGION ?= ap-southeast-2
 TF_VAR_PROJECT_NAME ?= "symbiote-terraform-task"
+TF_VAR_ENVIRONMENT ?= "development"
 
 ifndef VERBOSE
 .SILENT:
@@ -19,6 +20,7 @@ terraform:
 		-e AWS_SECRET_ACCESS_KEY \
 		-e AWS_REGION \
 		-e TF_VAR_project_name=$(TF_VAR_PROJECT_NAME) \
+		-e TF_VAR_environment=$(TF_VAR_ENVIRONMENT) \
 		hashicorp/terraform $(TF_ARGS)
 
 .PHONY: jq
