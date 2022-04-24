@@ -46,6 +46,25 @@ resource "aws_security_group_rule" "server_ingress" {
   security_group_id        = aws_security_group.server_security_group.id
 }
 
+resource "random_password" "db_master_pass" {
+  length            = 40
+  special           = true
+  min_special       = 5
+  override_special  = "!#$%^&*()-_=+[]{}<>:?"
+  keepers           = {
+    pass_version  = 1
+  }
+}
+
+resource "aws_secretsmanager_secret" "db_password" {
+  name = "${var.project_name}-${var.environment}-db-password"
+}
+
+resource "aws_secretsmanager_secret_version" "db_password_value" {
+  secret_id     = aws_secretsmanager_secret.db_password.id
+  secret_string = random_password.db_master_pass.result
+}
+
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
 
@@ -58,6 +77,7 @@ module "db" {
 
   db_name  = var.rds_db_name
   username = var.rds_user_name
+  password = aws_secretsmanager_secret_version.db_password_value.secret_string
   port     = var.rds_port
 
   iam_database_authentication_enabled = true
