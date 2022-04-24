@@ -40,7 +40,10 @@ backend-plan: backend tf-plan terraform
 backend-apply: backend tf-apply terraform
 
 .PHONY: backend-deploy
-backend-deploy: backend-init backend-plan backend-apply
+backend-deploy:
+	make backend-init
+	make backend-plan
+	make backend-apply
 
 .PHONY: solution
 solution:
