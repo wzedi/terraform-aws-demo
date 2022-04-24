@@ -7,23 +7,50 @@ resource "aws_iam_role" "instance_role" {
   name = "${var.project_name}-${var.environment}-instance-role"
   path = "/"
 
-  assume_role_policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
         {
-            "Action": "sts:AssumeRole",
-            "Principal": {
-               "Service": "ec2.amazonaws.com"
-            },
-            "Effect": "Allow",
-            "Sid": ""
+            Action = "sts:AssumeRole"
+            Principal = {
+               Service = "ec2.amazonaws.com"
+            }
+            Effect = "Allow",
         }
     ]
-}
-EOF
+  })
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore", "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
+}
+
+resource "aws_iam_policy" "secrets_policy" {
+  name        = "${var.project_name}-${var.environment}-secrets-policy"
+  path        = "/"
+  description = "Instance access to the DB password"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds"
+        ]
+        Effect   = "Allow"
+        Resource = aws_secretsmanager_secret_version.db_password_value.arn
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "secrets_policy_attachment" {
+  name       = "${var.project_name}-${var.environment}-secrets-policy-attachment"
+  roles      = [aws_iam_role.instance_role.name]
+  policy_arn = aws_iam_policy.secrets_policy.arn
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_alarm" {
@@ -43,8 +70,16 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_alarm" {
   }
 }
 
+data "aws_region" "current" {}
+
 data "template_file" "userdata" {
   template = "${file("userdata.tpl")}"
+  vars = {
+    RDS_ENDPOINT = module.db.db_instance_endpoint
+    DB_USERNAME  = var.rds_user_name
+    AWS_REGION   = data.aws_region.current.name
+    SECRET_ID    = aws_secretsmanager_secret_version.db_password_value.secret_id
+  }
 }
 
 module "asg" {

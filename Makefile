@@ -116,3 +116,8 @@ destroy:
 test-alb:
 	$(eval ALB_DNS_NAME := $(shell make solution-output | JQ_ARGS="-r .alb_dns_name.value" make jq))
 	curl http://$(ALB_DNS_NAME)
+
+.PHONY: test-mysql
+test-mysql:
+	$(eval ALB_DNS_NAME := $(shell make solution-output | JQ_ARGS="-r .alb_dns_name.value" make jq))
+	curl http://$(ALB_DNS_NAME)/mysql-test.php

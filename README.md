@@ -7,6 +7,10 @@ To get started:
 
 1. Run docker for your environment.
 1. Deploy with `AWS_PROFILE=myprofile make deploy`
+1. Test HTTP requests to the instance through the ALB: `AWS_PROFILE=myprofile make test-alb`
+    * Alternatively grab the ALB DNS name from the stack outputs printed when deploy was run and paste that into a browser
+1. Test the instance connection to the database: `AWS_PROFILE=myprofile make test-mysql`
+    * Alternatively grant the ALB DNS name from the stack outputs printed when deploy was run and paste that intoa browser with `/mysql-test.php` appended
 1. Destroy with `AWS_PROFILE=myprofile make destroy`. Before running this step the following manual steps are required in the console:
     * RDS deletion protection must be disabled
     * The state bucket must be emptied
