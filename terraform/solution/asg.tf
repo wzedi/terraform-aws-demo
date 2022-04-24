@@ -22,6 +22,8 @@ module "asg" {
   instance_type     = var.asg_instance_type
   enable_monitoring = true
 
+  target_group_arns = module.alb.target_group_arns
+
   tags = {
     Environment = var.environment
     Project     = var.project_name
