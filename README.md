@@ -1,6 +1,16 @@
 # symbiote-terraform-task
 Demonstrates how I approach terraform implementations.
 
+## TL;DR
+
+To get started:
+
+1. Run docker for your environment.
+1. Deploy with `AWS_PROFILE=myprofile make deploy`
+1. Destroy with `AWS_PROFILE=myprofile make destroy`. Before running this step the following manual steps are required in the console:
+    * RDS deletion protection must be disabled
+    * The state bucket must be emptied
+
 ## Usage
 
 This project has two stacks - the terraform backend and the main solution.
@@ -8,6 +18,7 @@ This project has two stacks - the terraform backend and the main solution.
 To deploy the entire solution:
 
 1. Setup your environment.
+    * REQUIRED: Run the Docker daemon for your environment. This project runs `terraform` and `jq` through docker.
     * REQUIRED: This is an AWS deployment. You'll need either an AWS credentials file and profile name or login to AWS
         * If you are using a credentials file the default location is `${HOME}/.aws`. Set `$AWS_CONFIG_DIR` to override the default.
         * If you are using AWS credentials please ensure `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` are set.
@@ -25,9 +36,39 @@ To deploy the entire solution:
 
 ### Destroy example:
 
+Note: To avoid errors when destroying the stack deletion protection must be removed from the RDS instance. To do this:
+
+1. Login to the RDS console
+1. Find the RDS instance for this stack
+1. Click to Modify the instance
+1. Disable instance protection near the bottom of the form
+
 ```
 % AWS_PROFILE=myprofile PLAN_FILE=backend-plan make destroy
 ```
+
+### Other terraform commands
+
+Terraform commands like `init` and `plan` are also implemented as `make` targets.
+
+The backend stack can also be managed separately to the solution stack.
+
+The various `make` targets are listed here. The `*-init`, `*-plan`, `*-apply` and `*-destroy` targets each run the corresponding terraform command.
+
+* backend-init
+* backend-plan
+* backend-apply
+* backend-output
+* backend-destroy
+* backend-deploy  - runs terraform `init`, `plan` and `apply` for the backend stack
+* solution-init
+* solution-plan
+* solution-apply
+* solution-destroy
+* solution-deploy  - runs terraform `init`, `plan` and `apply` for the solution stack
+* deploy - deploy the backend and the solution stack - runs terraform `init`, `plan` and `apply` for both stacks
+* destroy - destroy the solution stack then destroy the backend stack
+
 
 ## Requirements
 
@@ -51,6 +92,14 @@ We think that the task should not take more than a couple of hours to complete.
 ## Solution
 
 ### Overview
+
+The project uses `make` to manage deployment tasks
+
+This is a Terraform project but it does not assume Terraform is installed locally. Rather the project uses Terraform's Docker image to run commands.
+
+You'll need the Docker daemon running before running the deployment tasks in this project.
+
+There is also a dependency on `jq` to parse the backend state for the bucket name and lock table name. This also uses the Docker image for `jq` so it is not required to be installed locally.
 
 ### Terraform Backend
 
