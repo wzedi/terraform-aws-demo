@@ -29,7 +29,7 @@ variable "asg_max_size" {
 variable "asg_image_id" {
   description = "The AMI ID for the ASG launch template"
   type        = string
-  default     = "ami-0d6fb2916ee0ab9fe"
+  default     = "ami-0905cfb22089e0bf6"
 }
 
 variable "asg_instance_type" {
@@ -47,13 +47,13 @@ variable "rds_engine" {
 variable "rds_engine_version" {
   description = "The RDS engine version"
   type        = string
-  default     = "8.0.16"
+  default     = "8.0.28"
 }
 
 variable "rds_instance_class" {
   description = "The RDS instance class"
   type        = string
-  default     = "db.t3a.medium"
+  default     = "db.t2.small"
 }
 
 variable "rds_allocated_storage" {
@@ -65,7 +65,7 @@ variable "rds_allocated_storage" {
 variable "rds_db_name" {
   description = "The RDS database name"
   type        = string
-  default     = "symbiote-terraform-task-db"
+  default     = "SymbioteTerraformTask"
 }
 
 variable "rds_user_name" {
