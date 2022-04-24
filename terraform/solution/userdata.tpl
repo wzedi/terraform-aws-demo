@@ -15,6 +15,12 @@ cat << EOF > /tmp/cloudwatch-egent-config.json
                 "log_group_name": "messages",
                 "log_stream_name": "$${INSTANCE_ID}",
                 "timezone": "UTC"
+              },
+              {
+                "file_path": "/var/log/nginx/error.log",
+                "log_group_name": "nginx/error.log",
+                "log_stream_name": "$${INSTANCE_ID}",
+                "timezone": "UTC"
               }
             ]
           }
@@ -27,10 +33,10 @@ EOF
 
 cat << EOF > /etc/nginx/default.d/php-mysql.conf
 location ~ \.php$ {
-        try_files $uri =404;
+        try_files \$uri =404;
 
         include fastcgi_params;
-        fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+        fastcgi_param  SCRIPT_FILENAME    \$document_root\$fastcgi_script_name;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_index index.php;
         # fastcgi_intercept_errors on;
@@ -46,7 +52,7 @@ location ~ \.php$ {
         ##
 
         # fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=WORDPRESS:10m max_size=1000m inactive=60m;
-        # fastcgi_cache_key $scheme$host$request_uri$request_method;
+        # fastcgi_cache_key \$scheme\$host\$request_uri\$request_method;
         # fastcgi_cache_use_stale updating error timeout invalid_header http_500;
 
         fastcgi_cache_valid any 30m;
@@ -55,17 +61,17 @@ EOF
 
 cat << EOF > /usr/share/nginx/html/mysql-test.php
 <?php
-$servername = "${RDS_ENDPOINT}";
-$username = "${DB_USERNAME}";
+\$servername = "${RDS_ENDPOINT}";
+\$username = "${DB_USERNAME}";
 // Get the db secret using AWS CLI - better to use SDK but for emo purposes I think this suffices
-$password = shell_exec('aws secrets-manager get-secret-value --region ${AWS_REGION} --secret-id ${SECRET_ID}');
+\$password = shell_exec('aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${SECRET_ID} --query "SecretString" | tr -d \'"\'');
 
 // Create connection
-$conn = new mysqli($servername, $username, $password);
+\$conn = new mysqli(\$servername, \$username, \$password);
 
 // Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+if (\$conn->connect_error) {
+  die("Connection failed: " . \$conn->connect_error);
 }
 echo "Connected successfully";
 ?>
