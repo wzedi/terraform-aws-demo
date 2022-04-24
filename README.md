@@ -12,18 +12,24 @@ To deploy the entire solution:
         * If you are using a credentials file the default location is `${HOME}/.aws`. Set `$AWS_CONFIG_DIR` to override the default.
         * If you are using AWS credentials please ensure `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` are set.
     * OPTIONAL: The Terraform plan will output to a default location. To override the default set `$PLAN_FILE`
-1. Deploy the Terraform backend.
-    * With the environment set run `make backend-deploy`. This will run terraform `init`, `plan` and `apply` to deploy the backend.
-    * The Terraform state file for the backend is stored locally and should be committed.
-1. Deploy the solution stack
+1. Deploy the backend and the solution stack: `make deploy`. This will:
+    * Deploy the Terraform backend.
+        * The Terraform state file for the backend is stored locally and should be committed.
+    * Deploy the solution stack.
 
-### Example:
+### Deploy example:
 
 ```
-% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make backend-deploy
+% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make deploy
 ```
 
-## Instructions
+### Destroy example:
+
+```
+% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make destroy
+```
+
+## Requirements
 
 “We are keen for you to take a look at a small task to demonstrate how you approach terraform implementations.
 
@@ -61,3 +67,7 @@ The backend must be deployed before deploying the solution stack.
 ### Solution Stack
 
 The solution stack incldues the VPC, RDS instance and EC2 instance.
+
+The RDS instance is deployed into a "server" security group that allows ingress from the "client" security group only.
+
+The EC2 instance is deployed into the "client" security group.
