@@ -5,7 +5,7 @@ sudo amazon-linux-extras install nginx1 -y
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
-
+INSTANCE_ID=$(TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` && curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
 cat << EOF > /tmp/cloudwatch-egent-config.json
 {
     "logs": {
@@ -15,13 +15,13 @@ cat << EOF > /tmp/cloudwatch-egent-config.json
               {
                 "file_path": "/var/log/messages",
                 "log_group_name": "messages",
-                "log_stream_name": "$${aws:InstanceId}",
+                "log_stream_name": "$${INSTANCE_ID}",
                 "timezone": "UTC"
               }
             ]
           }
         },
-        "log_stream_name": "$${aws:InstanceId}",
+        "log_stream_name": "$${INSTANCE_ID}",
         "force_flush_interval" : 15
       }
 }

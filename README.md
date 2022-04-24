@@ -125,7 +125,7 @@ The EC2 instance is deployed to the "target" security group allowing http and ht
 
 Connect to the instance via SSM connection in the EC2 console.
 
-The Cloud Watch Agent has been installed and configured to stream the system log to Cloud Watch.
+The Cloud Watch Agent has been installed and configured to stream the system log to Cloud Watch. The log group is `messages` and log stream names are instance IDs.
 
 ### Gotchas and Troubleshooting
 

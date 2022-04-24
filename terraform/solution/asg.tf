@@ -26,7 +26,7 @@ EOF
   managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore", "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "foobar" {
+resource "aws_cloudwatch_metric_alarm" "cpu_utilisation_alarm" {
   alarm_name                = "${var.project_name}-${var.environment}-cpu-utilisation"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "2"
@@ -37,6 +37,10 @@ resource "aws_cloudwatch_metric_alarm" "foobar" {
   threshold                 = var.asg_cpu_utilisation_threshold
   alarm_description         = "This metric monitors ec2 cpu utilization"
   insufficient_data_actions = []
+
+  dimensions = {
+    AutoScalingGroupName = module.asg.autoscaling_group_name
+  }
 }
 
 data "template_file" "userdata" {
