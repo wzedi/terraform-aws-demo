@@ -5,7 +5,7 @@ data "aws_availability_zones" "available" {
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "${var.project_name}-$(var.environment}-vpc"
+  name = "${var.project_name}-${var.environment}-vpc"
   cidr = "10.0.0.0/16"
 
   azs             = data.aws_availability_zones.available.names
