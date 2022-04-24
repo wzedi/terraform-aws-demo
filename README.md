@@ -1,6 +1,28 @@
 # symbiote-terraform-task
 Demonstrates how I approach terraform implementations.
 
+## Usage
+
+This project has two stacks - the terraform backend and the main solution.
+
+To deploy the entire solution:
+
+1. Setup your environment.
+    * REQUIRED: This is an AWS deployment. You'll need either an AWS credentials file and profile name or login to AWS
+        * If you are using a credentials file the default location is `${HOME}/.aws`. Set `$AWS_CONFIG_DIR` to override the default.
+        * If you are using AWS credentials please ensure `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` are set.
+    * OPTIONAL: The Terraform plan will output to a default location. To override the default set `$PLAN_FILE`
+1. Deploy the Terraform backend.
+    * With the environment set run `make backend-deploy`. This will run terraform `init`, `plan` and `apply` to deploy the backend.
+    * The Terraform state file for the backend is stored locally and should be committed.
+1. Deploy the solution stack
+
+### Example:
+
+```
+% AWS_PROFILE=myprofile PLAN_FILE=backend-plan make backend-deploy
+```
+
 ## Instructions
 
 “We are keen for you to take a look at a small task to demonstrate how you approach terraform implementations.
