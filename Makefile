@@ -1,8 +1,8 @@
 AWS_CONFIG_DIR ?= ${HOME}/.aws
 PLAN_FILE ?= "terraform-plan"
 AWS_REGION ?= ap-southeast-2
-TF_VAR_PROJECT_NAME ?= "symbiote-terraform-task"
-TF_VAR_ENVIRONMENT ?= "development"
+TF_VAR_project_name ?= "symbiote-terraform-task"
+TF_VAR_environment ?= "development"
 
 ifndef VERBOSE
 .SILENT:
@@ -10,6 +10,7 @@ endif
 
 .PHONY: terraform
 terraform:
+	$(eval DOCKER_ENV_VARS := $(DOCKER_ENV_VARS) -e TF_VAR_project_name=$(TF_VAR_project_name) -e TF_VAR_environment=$(TF_VAR_environment))
 	docker run \
 		--rm \
 		-v $(AWS_CONFIG_DIR):/root/.aws:ro \
@@ -19,8 +20,7 @@ terraform:
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
 		-e AWS_REGION \
-		-e TF_VAR_project_name=$(TF_VAR_PROJECT_NAME) \
-		-e TF_VAR_environment=$(TF_VAR_ENVIRONMENT) \
+		$(DOCKER_ENV_VARS) \
 		hashicorp/terraform $(TF_ARGS)
 
 .PHONY: jq
@@ -36,6 +36,10 @@ tf-init:
 .PHONY: tf-apply
 tf-apply:
 	$(eval TF_ARGS := apply $(PLAN_FILE))
+
+.PHONY: tf-destroy
+tf-destroy:
+	$(eval TF_ARGS := destroy -auto-approve)
 
 .PHONY: tf-plan
 tf-plan:
@@ -61,6 +65,9 @@ backend-apply: backend tf-apply terraform
 .PHONY: backend-output
 backend-output: backend tf-output terraform
 
+.PHONY: backend-destroy
+backend-destroy: backend tf-destroy terraform
+
 .PHONY: backend-deploy
 backend-deploy:
 	make backend-init
@@ -83,8 +90,21 @@ solution-plan: solution tf-plan terraform
 .PHONY: solution-apply
 solution-apply: solution tf-apply terraform
 
+.PHONY: solution-destroy
+solution-destroy: solution tf-destroy terraform
+
 .PHONY: solution-deploy
 solution-deploy:
 	make solution-init
 	make solution-plan
 	make solution-apply
+
+.PHONY: deploy
+deploy:
+	make backend-deploy
+	make solution-deploy
+
+.PHONY: destroy
+destroy:
+	make solution-destroy
+	make backend-destroy
