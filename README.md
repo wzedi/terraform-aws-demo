@@ -11,8 +11,9 @@ To get started:
     * Alternatively grab the ALB DNS name from the stack outputs printed when deploy was run and paste that into a browser
 1. Test the instance connection to the database: `AWS_PROFILE=myprofile make test-mysql`
     * Alternatively grant the ALB DNS name from the stack outputs printed when deploy was run and paste that intoa browser with `/mysql-test.php` appended
-1. Destroy with `AWS_PROFILE=myprofile make destroy`. Before running this step the following manual steps are required in the console:
+1. Destroy the main stack with `AWS_PROFILE=myprofile make solution-destroy`. Before running this step the following manual steps are required in the console:
     * RDS deletion protection must be disabled
+1. Destroy the backend stack with `AWS_PROFILE=myprofile make backend-destroy`. Before running this step the following manual steps are required in the console:
     * The state bucket must be emptied
 
 ## Usage
@@ -146,7 +147,7 @@ The Cloud Watch Agent has been installed and configured to stream the system log
 
 ## Possible improvements given time
 
-* The userdata creates a bunch of files with bash heredocs - there are better ways to do that
+* The userdata creates a bunch of files with bash heredocs - there are likely ways to do that
 * the DB password lookup in the PHP script shells out to the AWS CLI - this would be better done with the AWS SDK
 * Fully implement IAM authentication to the database
 * PHP script not connecting successfully to the database - I think possibly related to MySQL 8 - possibly an exercise for the interview
