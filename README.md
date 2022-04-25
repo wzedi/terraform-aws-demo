@@ -148,4 +148,5 @@ The Cloud Watch Agent has been installed and configured to stream the system log
 
 * The userdata creates a bunch of files with bash heredocs - there are better ways to do that
 * the DB password lookup in the PHP script shells out to the AWS CLI - this would be better done with the AWS SDK
-* 
+* Fully implement IAM authentication to the database
+* PHP script not connecting successfully to the database - I think possibly related to MySQL 8 - possibly an exercise for the interview
