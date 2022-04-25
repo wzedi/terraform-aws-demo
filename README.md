@@ -1,4 +1,4 @@
-# symbiote-terraform-task
+# terraform-aws-demo
 Demonstrates how I approach terraform implementations.
 
 ## TL;DR
