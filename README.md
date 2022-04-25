@@ -11,7 +11,7 @@ To get started:
     * Alternatively grab the ALB DNS name from the stack outputs printed when deploy was run and paste that into a browser
 1. Test the instance connection to the database: `AWS_PROFILE=myprofile make test-mysql`
     * Alternatively grant the ALB DNS name from the stack outputs printed when deploy was run and paste that intoa browser with `/mysql-test.php` appended
-    * Unfortunately I had challenges completing this test with the PHP script - another way to confirm connection from the EC2 instance is:
+    * I had challenges completing this test with the PHP script - another way to confirm connection from the EC2 instance is:
         * Connect to the instance with SSM in the EC2 console
         * Install mysql: `sudo yum install mysql`
         * Connect to the database from the command line: `mysql -h <rds_instance_address>  -u <username> -p`
