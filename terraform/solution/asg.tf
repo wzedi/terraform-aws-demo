@@ -75,10 +75,10 @@ data "aws_region" "current" {}
 data "template_file" "userdata" {
   template = "${file("userdata.tpl")}"
   vars = {
-    RDS_ENDPOINT = module.db.db_instance_endpoint
-    DB_USERNAME  = var.rds_user_name
-    AWS_REGION   = data.aws_region.current.name
-    SECRET_ID    = aws_secretsmanager_secret_version.db_password_value.secret_id
+    RDS_ADDRESS = module.db.db_instance_address
+    DB_USERNAME = var.rds_user_name
+    AWS_REGION  = data.aws_region.current.name
+    SECRET_ID   = aws_secretsmanager_secret_version.db_password_value.secret_id
   }
 }
 

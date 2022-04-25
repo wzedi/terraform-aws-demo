@@ -21,6 +21,12 @@ cat << EOF > /tmp/cloudwatch-egent-config.json
                 "log_group_name": "nginx/error.log",
                 "log_stream_name": "$${INSTANCE_ID}",
                 "timezone": "UTC"
+              },
+              {
+                "file_path": "/var/log/nginx/access.log",
+                "log_group_name": "nginx/access.log",
+                "log_stream_name": "$${INSTANCE_ID}",
+                "timezone": "UTC"
               }
             ]
           }
@@ -61,7 +67,7 @@ EOF
 
 cat << EOF > /usr/share/nginx/html/mysql-test.php
 <?php
-\$servername = "${RDS_ENDPOINT}";
+\$servername = "${RDS_ADDRESS}";
 \$username = "${DB_USERNAME}";
 // Get the db secret using AWS CLI - better to use SDK but for emo purposes I think this suffices
 \$password = shell_exec('aws secretsmanager get-secret-value --region ${AWS_REGION} --secret-id ${SECRET_ID} --query "SecretString" | tr -d \'"\'');
@@ -74,6 +80,8 @@ if (\$conn->connect_error) {
   die("Connection failed: " . \$conn->connect_error);
 }
 echo "Connected successfully";
+
+\$conn->close();
 ?>
 EOF
 
