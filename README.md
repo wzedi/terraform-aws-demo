@@ -132,6 +132,7 @@ The Cloud Watch Agent has been installed and configured to stream the system log
 
 * If you do destroy the stack and then attempt to redeploy the database password secret name will be in conflict and must be changed in the rds config (maybe it should be a var)
 * When destroying the stack with `var.rds_skip_final_snapshot` set to `true` the destroy will fail after timeout because the DB options group is in use by the final snapshot and cannot be deleted. The final snapshot must be manually deleted.
+* The EC2 instance will take some time to start after deploy - the tests will fail with 503 errors until the instance is ready.
 
 ## Possible improvements given time
 
