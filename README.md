@@ -7,6 +7,10 @@ To get started:
 
 1. Run docker for your environment.
 1. Deploy with `AWS_PROFILE=myprofile make deploy`
+1. Test HTTP requests to the instance through the ALB: `AWS_PROFILE=myprofile make test-alb`
+    * Alternatively grab the ALB DNS name from the stack outputs printed when deploy was run and paste that into a browser
+1. Test the instance connection to the database: `AWS_PROFILE=myprofile make test-mysql`
+    * Alternatively grant the ALB DNS name from the stack outputs printed when deploy was run and paste that intoa browser with `/mysql-test.php` appended
 1. Destroy with `AWS_PROFILE=myprofile make destroy`. Before running this step the following manual steps are required in the console:
     * RDS deletion protection must be disabled
     * The state bucket must be emptied
@@ -139,3 +143,10 @@ The Cloud Watch Agent has been installed and configured to stream the system log
 
 * If you do destroy the stack and then attempt to redeploy the database password secret name will be in conflict and must be changed in the rds config (maybe it should be a var)
 * When destroying the stack with `var.rds_skip_final_snapshot` set to `true` the destroy will fail after timeout because the DB options group is in use by the final snapshot and cannot be deleted. The final snapshot must be manually deleted.
+
+## Possible improvements given time
+
+* The userdata creates a bunch of files with bash heredocs - there are better ways to do that
+* the DB password lookup in the PHP script shells out to the AWS CLI - this would be better done with the AWS SDK
+* Fully implement IAM authentication to the database
+* PHP script not connecting successfully to the database - I think possibly related to MySQL 8 - possibly an exercise for the interview

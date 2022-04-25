@@ -32,4 +32,3 @@ override.tf.json
 terraform/solution/main.tf
 terraform-plan
 .terraform.lock.hcl
-outputs.tf
