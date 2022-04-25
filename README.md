@@ -11,6 +11,13 @@ To get started:
     * Alternatively grab the ALB DNS name from the stack outputs printed when deploy was run and paste that into a browser
 1. Test the instance connection to the database: `AWS_PROFILE=myprofile make test-mysql`
     * Alternatively grant the ALB DNS name from the stack outputs printed when deploy was run and paste that intoa browser with `/mysql-test.php` appended
+    * Unfortunately I had challenges completing this test with the PHP script - another way to confirm connection from the EC2 instance is:
+        * Connect to the instance with SSM in the EC2 console
+        * Install mysql: `sudo yum install mysql`
+        * Connect to the database from the command line: `mysql -h <rds_instance_address>  -u <username> -p`
+        * Enter the password - look this up in secrets manager
+        * The client will connect
+        * If a new user is created with `IDENTIFIED WITH mysql_native_password ` and the PHP script is updated to use those details the script will connect
 1. Destroy the main stack with `AWS_PROFILE=myprofile make solution-destroy`. Before running this step the following manual steps are required in the console:
     * RDS deletion protection must be disabled
 1. Destroy the backend stack with `AWS_PROFILE=myprofile make backend-destroy`. Before running this step the following manual steps are required in the console:
